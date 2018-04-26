@@ -9,10 +9,12 @@ public class Cheaters {
 
     public static void main(String[] args) {
 
-        Map<String, List<String>> map = new HashMap<>();
+        Map<String, List<Integer>> map = new HashMap<>();
+        Map<Integer, String> numToFile = new HashMap<>();
+        int fileNum = 0;
 
         int sizeOfChunk = 6;
-        final File folder = new File("src/big_doc_set");
+        final File folder = new File("src/sm_doc_set");
         List<File> files = listFilesForFolder(folder);
         System.out.println(files.size());
 
@@ -42,20 +44,51 @@ public class Cheaters {
 
                 // chunks.add(s.toString());
                 String chunk = s.toString();
-                List<String> names = map.get(chunk);
+                List<Integer> names = map.get(chunk);
                 if (names == null) {
-                    names = new LinkedList<String>();
+                    names = new LinkedList<Integer>();
                     map.put(chunk, names);
                 }
-                names.add(file.getName());
+                names.add(fileNum);
 
+            }
+            numToFile.put(fileNum, file.getName());
+            fileNum++;
+        }
+
+//        for (String key : map.keySet()) {
+//            if (map.get(key).size() > 50)
+//                System.out.println(key);
+//        }
+
+        int matrix[][] = new int[files.size()][files.size()];
+
+
+        for (String key : map.keySet()) {
+            List<Integer> listOfFiles = map.get(key);
+            for (int i = 0; i < listOfFiles.size(); i++) {
+                for (int j = i + 1; j < listOfFiles.size(); j++) {
+                    matrix[listOfFiles.get(i)][listOfFiles.get(j)]++;
+                }
             }
         }
 
-        for (String key : map.keySet()) {
-            if (map.get(key).size() > 50)
-                System.out.println(key);
+        System.out.println();
+
+        List<Node> nodes = new ArrayList<>();
+        for (int row = 0; row < files.size(); row++) {
+            for (int col = 0; col < files.size(); col++) {
+                nodes.add(new Node(row, col, matrix[row][col]));
+            }
         }
+
+        Collections.sort(nodes);
+        Collections.reverse(nodes);
+
+        System.out.println();
+
+        Node temp = nodes.get(0);
+        System.out.println(numToFile.get(temp.firstFile) + " is similar to " + numToFile.get(temp.secondFile));
 
     }
 
