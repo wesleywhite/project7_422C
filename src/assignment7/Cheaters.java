@@ -7,14 +7,19 @@ import java.util.*;
 
 public class Cheaters {
 
+    static Scanner kb;
+
     public static void main(String[] args) {
+
+        kb = new Scanner(System.in);
+        String[] input = parse(kb);
 
         Map<String, List<Integer>> map = new HashMap<>();
         Map<Integer, String> numToFile = new HashMap<>();
         int fileNum = 0;
 
-        int sizeOfChunk = 6;
-        final File folder = new File("src/sm_doc_set");
+        int sizeOfChunk = Integer.parseInt(input[1]);
+        final File folder = new File(input[0]);
         List<File> files = listFilesForFolder(folder);
         System.out.println(files.size());
 
@@ -36,7 +41,7 @@ public class Cheaters {
             }
             for (int i = 0; i < listOfAllWords.size()-5; i++) {
                 StringBuilder s = new StringBuilder();
-                for (int temp = i; temp < i + 5; temp++) {
+                for (int temp = i; temp < i + sizeOfChunk-1; temp++) {
                     String tempWord = listOfAllWords.get(temp);
                     tempWord = tempWord.replaceAll("[^A-Za-z0-9]", "");
                     s.append(tempWord.toUpperCase());
@@ -87,9 +92,23 @@ public class Cheaters {
 
         System.out.println();
 
-        Node temp = nodes.get(0);
-        System.out.println(numToFile.get(temp.firstFile) + " is similar to " + numToFile.get(temp.secondFile));
+        int index = 0;
+        int bound = Integer.parseInt(input[2]);
+        while(nodes.get(index).commonChunks > bound){
+            Node temp = nodes.get(index);
+            if(!(numToFile.get(temp.firstFile).equals(numToFile.get(temp.secondFile)))){
+                System.out.println(numToFile.get(temp.firstFile) + " is similar to " + numToFile.get(temp.secondFile) + " in " + temp.commonChunks + " ways");
+            }
+            index++;
+        }
 
+    }
+
+
+    public static String[] parse(Scanner keyboard) {
+            String input = keyboard.nextLine();
+            String split[] = input.split(" ");
+            return split;
     }
 
     public static List<File> listFilesForFolder(final File folder) {
