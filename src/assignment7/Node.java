@@ -16,9 +16,9 @@ public class Node implements Comparable {
     public int compareTo(Object o) {
         Node other = (Node) o;
         if (this.commonChunks > other.commonChunks)
-            return 1;
-        if (other.commonChunks > this.commonChunks)
             return -1;
+        if (other.commonChunks > this.commonChunks)
+            return 1;
         return 0;
     }
 

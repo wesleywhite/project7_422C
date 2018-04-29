@@ -7,23 +7,17 @@ import java.util.*;
 
 public class Cheaters {
 
-    static Scanner kb;
 
     public static void main(String[] args) {
-
-        kb = new Scanner(System.in);
-        String[] input = parse(kb);
 
         Map<String, List<Integer>> map = new HashMap<>();
         Map<Integer, String> numToFile = new HashMap<>();
         int fileNum = 0;
 
-        int sizeOfChunk = Integer.parseInt(input[1]);
-        final File folder = new File(input[0]);
+        int sizeOfChunk = Integer.parseInt(args[1]);
+        final File folder = new File(args[0]);
         List<File> files = listFilesForFolder(folder);
-        System.out.println(files.size());
 
-        ArrayList<String> chunks = new ArrayList<>();
         for (File file : files) {
             ArrayList<String> listOfAllWords = new ArrayList<>();
             BufferedReader br = null;
@@ -47,7 +41,7 @@ public class Cheaters {
                     s.append(tempWord.toUpperCase());
                 }
 
-                // chunks.add(s.toString());
+                // Add to map. Key is the chunk. List of filenames is the value.
                 String chunk = s.toString();
                 List<Integer> names = map.get(chunk);
                 if (names == null) {
@@ -57,17 +51,12 @@ public class Cheaters {
                 names.add(fileNum);
 
             }
-            numToFile.put(fileNum, file.getName());
+            numToFile.put(fileNum, file.getName()); // Map the file number to the filename for output purposes
             fileNum++;
         }
 
-//        for (String key : map.keySet()) {
-//            if (map.get(key).size() > 50)
-//                System.out.println(key);
-//        }
-
+        // Creating the matrix
         int matrix[][] = new int[files.size()][files.size()];
-
 
         for (String key : map.keySet()) {
             List<Integer> listOfFiles = map.get(key);
@@ -78,8 +67,6 @@ public class Cheaters {
             }
         }
 
-        System.out.println();
-
         List<Node> nodes = new ArrayList<>();
         for (int row = 0; row < files.size(); row++) {
             for (int col = 0; col < files.size(); col++) {
@@ -87,61 +74,28 @@ public class Cheaters {
             }
         }
 
-        Collections.sort(nodes);
-        Collections.reverse(nodes);
-
-        System.out.println();
+        Collections.sort(nodes); // Overriden compareTo method in the node class
 
         int index = 0;
-        int bound = Integer.parseInt(input[2]);
+        int bound = Integer.parseInt(args[2]);
         while(nodes.get(index).commonChunks > bound){
             Node temp = nodes.get(index);
             if(!(numToFile.get(temp.firstFile).equals(numToFile.get(temp.secondFile)))){
-                System.out.println(numToFile.get(temp.firstFile) + " is similar to " + numToFile.get(temp.secondFile) + " in " + temp.commonChunks + " ways");
+                System.out.println(temp.commonChunks + ": " + numToFile.get(temp.firstFile) + ", " + numToFile.get(temp.secondFile));
             }
             index++;
         }
 
     }
 
-
-    public static String[] parse(Scanner keyboard) {
-            String input = keyboard.nextLine();
-            String split[] = input.split(" ");
-            return split;
-    }
-
-    public static List<File> listFilesForFolder(final File folder) {
+    private static List<File> listFilesForFolder(final File folder) {
         List<File> files = new ArrayList<>();
         for (final File fileEntry : folder.listFiles()) {
-            files.add(fileEntry);
+            if (!fileEntry.getName().equals(".DS_Store"))
+                files.add(fileEntry);
         }
         return files;
     }
 
-    private static Set<String> posible2(String posLoc) {
-        Set<String> result = new TreeSet<String>();
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new FileReader(new File(posLoc)));
-            String availalbe;
-            while((availalbe = br.readLine()) != null) {
-                result.add(availalbe);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return result;
-    }
 
 }
